@@ -2,6 +2,8 @@ from __future__ import division
 from __future__ import print_function
 from tensorflow.python.client import device_lib
 device_lib.list_local_devices()
+from tensorflow.python import debug as tf_debug
+
 
 import tensorflow as tf
 import itertools
@@ -12,11 +14,12 @@ from pylab import rcParams
 import matplotlib
 
 
-
 tf.logging.set_verbosity(tf.logging.INFO)
-sess = tf.InteractiveSession()
+#sess = tf.InteractiveSession()
 
-train = pd.read_pickle('all_design.pkl')#Cotaining all training data
+
+
+train = pd.read_pickle(r"..\all_design.pkl").dropna()#Cotaining all training data
 print('Shape of the train data with all features:', train.shape)
 print("")
 print('Shape of the train data with numerical features:', train.shape)
@@ -71,26 +74,41 @@ def input_fn(pred = False, batch_size = 256):
 epochs = 10
 #batch_size =128
 
-logs_path = r'D:\Yale_Course\Deep Learning Theory Application\Deep-Learning-Group-Project-Monophonic-design-of-layered-structure\tensor_board_test'
+
+
+#logs_path = r'D:\Yale_Course\Deep Learning Theory Application\Deep-Learning-Group-Project-Monophonic-design-of-layered-structure\tensor_board_test'
+logs_path = r'tensor_board_test'
+
+
+
+def serving_input_fn():
+    feature_placeholders = input_fn()[0]
+    features = {
+        key: tf.expand_dims(tensor, -1)
+        for key, tensor in feature_placeholders.items()
+    }
+    return tf.estimator.export.ServingInputReceiver(features, 
+                                                    feature_placeholders)
+
 #saver = tf.train.Saver()
-with tf.Session() as sess:
+with tf.Session() as sess1:
+
     writer = tf.summary.FileWriter(logs_path, graph=tf.get_default_graph())
     for e in range(epochs):
         regress_res = regressor.train(input_fn = input_fn, steps=1000)
-        ev = regressor.evaluate(input_fn = input_fn, steps=1)
+        #ev = regressor.evaluate(input_fn = input_fn, steps=1)
     #sess.close()
         
     #saver.save(sess2, "/model.ckpt")
     # Shuffle training data
-    
 
-#%%Prediction Mode
-input_fn_pred = input_fn(pred = True)
-with tf.Session() as sess:
-    y = regressor.predict(input_fn = lambda: input_fn(pred = True))
-    predictions = list(itertools.islice(y, 6))
-    print("Predictions: {}".format(str(predictions)))
-    sess.close()
+# Prediction Mode
+#input_fn_pred = input_fn(pred = True)
+#with tf.Session() as sess2:
+#    y = regressor.predict(input_fn = lambda: input_fn(pred = True))
+#    predictions = list(itertools.islice(y, 6))
+#    print("Predictions: {}".format(str(predictions)))
+#    sess.close()
 
 
 #regressor.fit(input_fn=lambda: input_fn(training_set), steps=2000)

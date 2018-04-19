@@ -1,0 +1,6 @@
+model_checkpoint_path: "t1.ckpt-190"
+all_model_checkpoint_paths: "t1.ckpt-114"
+all_model_checkpoint_paths: "t1.ckpt-133"
+all_model_checkpoint_paths: "t1.ckpt-152"
+all_model_checkpoint_paths: "t1.ckpt-171"
+all_model_checkpoint_paths: "t1.ckpt-190"
